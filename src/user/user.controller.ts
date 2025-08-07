@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/validate-user.dto';
+import type { Response } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -19,8 +20,8 @@ export class UserController {
   }
 
   @Get('token/:id')
-  createToken(@Param('id',ParseIntPipe) id: number) {
-    return this.userService.createToken(id);
+  createToken(@Param('id',ParseIntPipe) id: number, @Res({passthrough:true}) response:Response) {
+    return this.userService.createToken(id,response);
   }
 
   @Patch(':id')

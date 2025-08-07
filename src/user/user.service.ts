@@ -1,4 +1,4 @@
-import { Body, Injectable, NotFoundException, Post } from '@nestjs/common';
+import { Body, Injectable, NotFoundException, ParseDatePipe, Post, Res } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,9 @@ import bcrypt from 'bcrypt';
 import { LoginDto } from './dto/validate-user.dto';
 import  Jwt  from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import cookie from 'cookie'
+import type { Response } from 'express';
+
 
 
 
@@ -120,7 +123,7 @@ export class UserService {
     return {message:`Welcome user ${user.email}  - id: ${user.user.id}`,acces:true,id:user.user.id};
   }
 
-  async createToken(id: number) {
+  async createToken(id: number,@Res({passthrough:true}) response:Response) {
 
     const user = await this.loginRepository.createQueryBuilder('login')
     .innerJoin('login.user','user')
@@ -154,8 +157,12 @@ export class UserService {
     }
     const token = Jwt.sign(infoUser,secret,{expiresIn:'1h'});
     
-    return {
-      token:token
+    response.cookie("token",token,{
+      httpOnly:true,
+      maxAge:3600*1000
+    });
+   return {
+      token:"Cookie created!"
     };
   }
   update(id: number, updateUserDto: UpdateUserDto) {
