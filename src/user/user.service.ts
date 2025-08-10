@@ -11,6 +11,7 @@ import  Jwt  from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie'
 import type { Response } from 'express';
+import { JwtService } from '@nestjs/jwt';
 
 
 
@@ -23,6 +24,7 @@ export class UserService {
   @InjectRepository(Login)
   private loginRepository: Repository<Login>,
   private configService: ConfigService,
+  private readonly jwtService:JwtService
 ){}
 
   
@@ -127,6 +129,7 @@ export class UserService {
 
     const user = await this.loginRepository.createQueryBuilder('login')
     .innerJoin('login.user','user')
+    .innerJoin('user.rol','rol')
     .where('user.id = :id',{id:id})
     .select([
       'login.id',
@@ -134,7 +137,7 @@ export class UserService {
       'user.name',
       'user.cellphone',
       'user.gender',
-      'user.rol'
+      'rol.rol'
     ])
     .getOne();
  
@@ -147,7 +150,7 @@ export class UserService {
       name: user.user.name,
       email: user.email,
       cellphone: user.user.cellphone,
-      rol: user.user.rol
+      rol: user.user.rol.rol,
     }
 
     console.log(user)
@@ -155,8 +158,8 @@ export class UserService {
     if(!secret){
     throw new Error("There is not secret word")
     }
-    const token = Jwt.sign(infoUser,secret,{expiresIn:'1h'});
-    
+    const token = this.jwtService.sign(infoUser);
+
     response.cookie("token",token,{
       httpOnly:true,
       maxAge:3600*1000
@@ -165,6 +168,20 @@ export class UserService {
       token:"Cookie created!"
     };
   }
+
+   logout(response:Response){
+     
+    response.clearCookie("token",{
+      httpOnly:true
+    });
+    response.send({message:"Cookie eliminated",session:"Session closed"})
+   }
+
+   showInfo(){
+    
+    
+   }
+
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }

@@ -6,6 +6,7 @@ import { User } from './user/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Login } from './user/entities/user.login.entity';
 import { UserModule } from './user/user.module';
+import { JwtModule } from '@nestjs/jwt';
 
 
 @Module({
@@ -15,14 +16,19 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot({
       isGlobal:true
     }),
+    JwtModule.register({
+      global:true,
+      secret:process.env.SECRET,
+      signOptions:{expiresIn:'1h'}
+    }),
     
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
       port: 3306,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_MYSQL,
+      username: process.env.USER,
+      password: process.env.PASS,
+      database: process.env.DB,
       entities: [],
       autoLoadEntities: true,
       synchronize:true

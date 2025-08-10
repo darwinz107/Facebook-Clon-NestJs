@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/validate-user.dto';
 import type { Response } from 'express';
+import { AuthGuard } from './guards/auth/auth.guard';
+import { Roles } from './decorators/auth/roles.decorator';
 
 @Controller('user')
 export class UserController {
@@ -22,6 +24,18 @@ export class UserController {
   @Get('token/:id')
   createToken(@Param('id',ParseIntPipe) id: number, @Res({passthrough:true}) response:Response) {
     return this.userService.createToken(id,response);
+  }
+   @Roles('admin')
+   @UseGuards(AuthGuard)
+   @Get('rol')
+   validateToken(){
+     console.log(' Entró al método validateToken');
+    return {acess:true,message:'Token is valid'};
+   }
+
+  @Get('logout')
+  logout(@Res() response:Response){
+   return this.userService.logout(response);
   }
 
   @Patch(':id')
