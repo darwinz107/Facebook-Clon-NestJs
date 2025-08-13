@@ -3,16 +3,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Login } from './entities/user.login.entity';
 import bcrypt from 'bcrypt';
 import { LoginDto } from './dto/validate-user.dto';
 import  Jwt  from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie'
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
-
+import { InferenceClient } from "@huggingface/inference";
+import { GoogleGenAI, Modality } from "@google/genai";
 
 
 
@@ -24,7 +25,8 @@ export class UserService {
   @InjectRepository(Login)
   private loginRepository: Repository<Login>,
   private configService: ConfigService,
-  private readonly jwtService:JwtService
+  private readonly jwtService:JwtService,
+  private dataSource:DataSource
 ){}
 
   
@@ -125,14 +127,14 @@ export class UserService {
     return {message:`Welcome user ${user.email}  - id: ${user.user.id}`,acces:true,id:user.user.id};
   }
 
-  async createToken(id: number,@Res({passthrough:true}) response:Response) {
+  async createToken(id: number, response:Response) {
 
     const user = await this.loginRepository.createQueryBuilder('login')
     .innerJoin('login.user','user')
     .innerJoin('user.rol','rol')
     .where('user.id = :id',{id:id})
     .select([
-      'login.id',
+      'user.id',
       'login.email',
       'user.name',
       'user.cellphone',
@@ -140,7 +142,7 @@ export class UserService {
       'rol.rol'
     ])
     .getOne();
- 
+ console.log(user);
     if(!user){
    throw new NotFoundException("User don't found!");
     }
@@ -177,14 +179,150 @@ export class UserService {
     response.send({message:"Cookie eliminated",session:"Session closed"})
    }
 
-   showInfo(){
+  async showInfo(request:{id:number}){
+
+  console.log(request.id);
+    const id = request.id;
+
+    const user = await this.loginRepository.createQueryBuilder('login')
+    .innerJoin('login.user','user')
+    .where('user.id = :id',{id:id})
+    .select([
+      'user.name',
+      'user.cellphone',
+      'user.gender',
+      'login.email'
+    ])
+    .getOne();
     
-    
+    const info = {
+      name:user?.user.name,
+      cellphone: user?.user.cellphone,
+      gender:user?.user.gender,
+      email:user?.email
+    };
+
+    return info;
+
    }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(/*id: number*/ payloado:{id:number}, updateUserDto: UpdateUserDto) {
+    
+    const queryRunner = this.dataSource.createQueryRunner();
+    queryRunner.connect();
+    queryRunner.startTransaction();
+    
+ 
+    
+    
+try{
+
+const findUser = await queryRunner.manager.createQueryBuilder(Login,'login')
+    .innerJoin('login.user','user')
+    .where('user.id = :id',{id:payloado.id})
+    .select([
+      'login.id'
+    ])
+    .getOne();
+
+    if(!findUser){
+      throw new NotFoundException(`User with ${payloado.id} not found`);
+    }
+
+const infoUser = {
+  name: updateUserDto.name,
+  cellphone: updateUserDto.cellphone,
+  gender: updateUserDto.gender
+};
+const infoLogin ={
+  email:updateUserDto.email
+}
+
+ await queryRunner.manager.update(User,payloado.id,infoUser);
+ await queryRunner.manager.update(Login,findUser.id,infoLogin);
+
+ queryRunner.commitTransaction();
+    return {message:`This action updates a #${payloado.id} user`,id:payloado.id};
+}catch(error){
+throw new Error(`Error in update: ${error.message}`);
+queryRunner.rollbackTransaction();
+}finally{
+queryRunner.release();
+}
+    
   }
+
+  async DeepSeekIa(prompt:string){
+    const client = new InferenceClient(process.env.HF_TOKEN);
+
+const chatCompletion = await client.chatCompletion({
+    provider: "fireworks-ai",
+    model: "deepseek-ai/DeepSeek-R1",
+    messages: [
+        {
+            role: "user",
+            content: prompt,
+        },
+    ],
+});
+
+
+console.log(chatCompletion.choices[0].message);
+return {message:chatCompletion.choices[0].message.content};
+  }
+
+  async geminiGenerateImg(prompt:{prompt:string}){
+ 
+    console.log(prompt.prompt);
+
+    const ai = new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY});
+    
+  try{
+const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash-preview-image-generation",
+    contents: prompt.prompt,
+    config: {
+      responseModalities: [Modality.TEXT, Modality.IMAGE],
+    },
+  });
+ 
+  if(response?.candidates
+   && response.candidates[0]?.content?.parts 
+  ){
+   for (const part of response.candidates[0].content.parts) {
+    // Based on the part type, either show the text or save the image
+    let generateJson = {text:'',
+        binary:''}
+     if(part.text){
+        console.log(part.text)
+      generateJson.text = part.text;
+      
+     }
+
+     if ( part.inlineData) {
+      const imageData = part.inlineData?.data;
+      if(imageData){
+      /*const buffer = Buffer.from(imageData, "base64");
+      fs.writeFileSync("gemini-native-image.png", buffer);
+       */
+      generateJson.binary = imageData;
+   
+      return generateJson;
+      
+      }else{
+       console.log("Error at generate image")
+      }
+    }
+  }
+}else{
+console.log("Error: Response empty")
+}
+
+  }catch(error){
+    throw new Error("Error in gemini: ", error.message)
+  }
+  
+}
 
   remove(id: number) {
     return `This action removes a #${id} user`;

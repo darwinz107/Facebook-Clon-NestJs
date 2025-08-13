@@ -20,6 +20,7 @@ export class AuthGuard implements CanActivate {
    const roles = this.reflector.get<string[]>('roles',context.getHandler());
       
         const request = context.switchToHttp().getRequest() as Request ;
+        
         console.log('Cookies:', request.cookies);
         const token = request.cookies.token || request.headers['authorization']?.split(' ')[1];
         if(!token){

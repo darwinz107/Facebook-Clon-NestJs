@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Res, UseGuards, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/validate-user.dto';
-import type { Response } from 'express';
+import type { Request, response, Response } from 'express';
 import { AuthGuard } from './guards/auth/auth.guard';
 import { Roles } from './decorators/auth/roles.decorator';
+import { UserGuard } from './guards/user/user.guard';
 
 @Controller('user')
 export class UserController {
@@ -38,9 +39,28 @@ export class UserController {
    return this.userService.logout(response);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @UseGuards(UserGuard)
+  @Get('insert/infoUpdate')
+  setInfo(@Req() request:Request){
+    console.log("request in controller:",request.user)
+    return this.userService.showInfo(request.user);
+  }
+  
+  @UseGuards(UserGuard)
+  @Patch('update')
+  update(/*@Param('id') id: string*/ @Req() request:Request, @Body() updateUserDto: UpdateUserDto) {
+
+    return this.userService.update(request.user, updateUserDto);
+  }
+
+  @Post('deepseek')
+  DeepSeekChat(@Body() prompt:string){
+   return this.userService.DeepSeekIa(prompt);
+  }
+
+  @Post('gemini')
+  geminiGenerateImg(@Body() prompt:{prompt:string}){
+    return this.userService.geminiGenerateImg(prompt)
   }
 
   @Delete(':id')
