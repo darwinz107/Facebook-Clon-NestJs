@@ -252,7 +252,7 @@ queryRunner.release();
     
   }
 
-  async DeepSeekIa(prompt:string){
+ async DeepSeekIa(prompt:{prompt:string}){
     const client = new InferenceClient(process.env.HF_TOKEN);
 
 const chatCompletion = await client.chatCompletion({
@@ -261,7 +261,7 @@ const chatCompletion = await client.chatCompletion({
     messages: [
         {
             role: "user",
-            content: prompt,
+            content: prompt.prompt,
         },
     ],
 });
