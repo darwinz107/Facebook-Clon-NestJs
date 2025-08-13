@@ -252,6 +252,7 @@ queryRunner.release();
     
   }
 
+  
   async DeepSeekIa(prompt:{prompt:string}){
     const client = new InferenceClient(process.env.HF_TOKEN);
 
