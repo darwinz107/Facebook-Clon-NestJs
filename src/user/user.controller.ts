@@ -53,8 +53,8 @@ export class UserController {
     return this.userService.update(request.user, updateUserDto);
   }
 
-  @Post('deepseek')
-  DeepSeekChat(@Body() prompt:string){
+ @Post('deepseek')
+  DeepSeekChat(@Body() prompt:{prompt:string}){
    return this.userService.DeepSeekIa(prompt);
   }
 
