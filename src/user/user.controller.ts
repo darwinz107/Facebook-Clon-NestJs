@@ -54,7 +54,7 @@ export class UserController {
   }
 
   @Post('deepseek')
-  DeepSeekChat(@Body() prompt:string){
+  DeepSeekChat(@Body() prompt:{prompt:string}){
    return this.userService.DeepSeekIa(prompt);
   }
 
