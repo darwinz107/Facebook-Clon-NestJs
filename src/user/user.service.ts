@@ -324,6 +324,33 @@ console.log("Error: Response empty")
   
 }
 
+async redtubeAPI (){
+
+const category = ["tits","ass"];
+  const params = new URLSearchParams({
+    search:"BigTits"
+  })
+
+if(category){  
+category.forEach((element)=>{
+  params.append('tags[]',element);
+})  
+}else{
+  params.append('tags[]','');
+}
+  
+  const link = `https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&${params.toString()}&thumbsize=medium`;
+  
+  const response = await fetch(link,{
+    method:'GET'
+  });
+
+  const data = await response.json();
+  return data;
+
+}
+
+
   remove(id: number) {
     return `This action removes a #${id} user`;
   }

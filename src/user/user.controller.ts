@@ -63,6 +63,11 @@ export class UserController {
     return this.userService.geminiGenerateImg(prompt)
   }
 
+  @Get('redtube')
+  redtubeAPI(){
+    return this.userService.redtubeAPI();
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
