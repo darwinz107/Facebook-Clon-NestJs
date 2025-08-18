@@ -53,7 +53,7 @@ export class UserController {
     return this.userService.update(request.user, updateUserDto);
   }
 
-  @Post('deepseek')
+ @Post('deepseek')
   DeepSeekChat(@Body() prompt:{prompt:string}){
    return this.userService.DeepSeekIa(prompt);
   }
@@ -61,6 +61,16 @@ export class UserController {
   @Post('gemini')
   geminiGenerateImg(@Body() prompt:{prompt:string}){
     return this.userService.geminiGenerateImg(prompt)
+  }
+
+  @Get('redtube')
+  redtubeAPI(){
+    return this.userService.redtubeAPI();
+  }
+
+  @Get('generate/imgStorie')
+  generateImgStorie(){
+    return this.userService.generateImgStorie();
   }
 
   @Delete(':id')

@@ -252,8 +252,7 @@ queryRunner.release();
     
   }
 
-  
-  async DeepSeekIa(prompt:{prompt:string}){
+ async DeepSeekIa(prompt:{prompt:string}){
     const client = new InferenceClient(process.env.HF_TOKEN);
 
 const chatCompletion = await client.chatCompletion({
@@ -324,6 +323,50 @@ console.log("Error: Response empty")
   }
   
 }
+
+async redtubeAPI (){
+
+const category = ["tits","ass"];
+  const params = new URLSearchParams({
+    search:"BigTits"
+  })
+
+if(category){  
+category.forEach((element)=>{
+  params.append('tags[]',element);
+})  
+}else{
+  params.append('tags[]','');
+}
+  
+  const link = `https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&${params.toString()}&thumbsize=medium`;
+  
+  const response = await fetch(link,{
+    method:'GET'
+  });
+
+  const data = await response.json();
+  return data;
+
+}
+
+async generateImgStorie(){
+
+  try {
+     const respose = await fetch("https://gist.githubusercontent.com/poudyalanil/ca84582cbeb4fc123a13290a586da925/raw/videos.json",{
+    method:'GET',
+    
+  });
+
+  const data = await respose.json();
+  return data;
+    
+  } catch (error) {
+    console.error("Error fetching image stories:", error);
+  }
+ 
+}
+
 
   remove(id: number) {
     return `This action removes a #${id} user`;
