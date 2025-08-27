@@ -371,4 +371,13 @@ async generateImgStorie(){
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
+  async usersInfo(){
+
+    const users = await this.userRepository.find();
+
+    return users;
+  }
 }
+
+

@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 import { Observable } from 'rxjs';
+import { roles } from 'src/user/enums/rol.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -17,7 +18,7 @@ export class AuthGuard implements CanActivate {
   ): boolean {
   console.log("AuthGuard is running");
 
-   const roles = this.reflector.get<string[]>('roles',context.getHandler());
+   const roles = this.reflector.get<roles[]>('roles',context.getHandler());
       
         const request = context.switchToHttp().getRequest() as Request ;
         

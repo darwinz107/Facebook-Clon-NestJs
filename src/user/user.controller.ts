@@ -7,6 +7,7 @@ import type { Request, response, Response } from 'express';
 import { AuthGuard } from './guards/auth/auth.guard';
 import { Roles } from './decorators/auth/roles.decorator';
 import { UserGuard } from './guards/user/user.guard';
+import { roles } from './enums/rol.enum';
 
 @Controller('user')
 export class UserController {
@@ -77,4 +78,11 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
+  @Roles('admin')
+  @UseGuards(AuthGuard)
+  @Get('infoUsers')
+  userInfo(){
+    return this.userService.usersInfo();
+  }
+
 }
