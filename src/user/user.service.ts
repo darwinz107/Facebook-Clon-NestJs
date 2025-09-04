@@ -14,6 +14,7 @@ import type { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { InferenceClient } from "@huggingface/inference";
 import { GoogleGenAI, Modality } from "@google/genai";
+import { Interaction } from './entities/user.interaction.entity';
 
 
 
@@ -24,6 +25,8 @@ export class UserService {
   private userRepository: Repository<User>,
   @InjectRepository(Login)
   private loginRepository: Repository<Login>,
+  @InjectRepository(Interaction)
+  private interactionRepository: Repository<Interaction>,
   private configService: ConfigService,
   private readonly jwtService:JwtService,
   private dataSource:DataSource
@@ -367,10 +370,24 @@ async generateImgStorie(){
  
 }
 
+  async interactionBetweenUsers(receptorId:number, emisorId:number, msj:string){
+     
+    const saveInteraction = this.interactionRepository.create({
+      receptorId,
+      emisorId,
+     message:msj,
+    });
+ 
+    return this.interactionRepository.save(saveInteraction);
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+
+  } 
+
+  async messagesInteraction(receptorId:number, emisorId:number){
+
+    const messaggesSend = await this.interactionRepository.createQueryBuilder('interaction')
+    .innerJoin()
+  } 
 
   async usersInfo(){
 

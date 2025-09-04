@@ -74,15 +74,16 @@ export class UserController {
     return this.userService.generateImgStorie();
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
-  }
   @Roles('admin')
   @UseGuards(AuthGuard)
   @Get('infoUsers')
   userInfo(){
     return this.userService.usersInfo();
+  }
+
+  @Post('interaction/:id/:id2')
+  interactionBetweenRepository(@Param('id',ParseIntPipe) id:number , @Param('id2') id2:number , @Body() message:string){
+    return this.userService.interactionBetweenUsers(id,+id2,message);
   }
 
 }
