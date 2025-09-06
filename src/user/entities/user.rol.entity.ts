@@ -8,7 +8,10 @@ export class Rol{
 @PrimaryGeneratedColumn()
 id:number
 
-@Column()
+@Column({type:"enum",
+    enum:roles,
+    default:roles.USER
+})
 @IsEnum(roles)
 rol:string
 

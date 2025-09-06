@@ -1,7 +1,8 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Login } from "./user.login.entity";
 import { Rol } from "./user.rol.entity";
+import { Interaction } from "./user.interaction.entity";
 
 @Entity()
 export class User {
@@ -33,4 +34,10 @@ export class User {
     @OneToOne(()=>Rol,(rol)=>rol.user)
     @JoinColumn()
     rol:Rol
+    
+    @OneToMany(()=>Interaction,(interaction)=>interaction.emisorId)
+    emisor:Interaction[]
+
+    @OneToMany(()=>Interaction,(interaction)=>interaction.receptorId)
+    receptor:Interaction[]
 }

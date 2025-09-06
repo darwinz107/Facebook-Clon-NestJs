@@ -8,6 +8,7 @@ import { AuthGuard } from './guards/auth/auth.guard';
 import { Roles } from './decorators/auth/roles.decorator';
 import { UserGuard } from './guards/user/user.guard';
 import { roles } from './enums/rol.enum';
+import { InteractionDTO } from './dto/interaction-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -74,10 +75,6 @@ export class UserController {
     return this.userService.generateImgStorie();
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
-  }
   @Roles('admin')
   @UseGuards(AuthGuard)
   @Get('infoUsers')
@@ -85,4 +82,17 @@ export class UserController {
     return this.userService.usersInfo();
   }
 
+  @Post('interaction/:id/:id2')
+  interactionBetweenUsers(@Param('id',ParseIntPipe) id:number, @Param('id2',ParseIntPipe) id2:number, @Body() InteractionDTO:InteractionDTO){
+    return this.userService.interactionBetweenUsers({
+      emisorId: id,
+      receptorId: id2,
+      message:InteractionDTO.message
+    });
+  }
+
+  @Get('loadInteraction/:id/:id2')
+  getInteractions(@Param('id',ParseIntPipe) id:number,@Param('id2') id2:number){
+     return this.userService.getInteractions(id,+id2)
+  }
 }

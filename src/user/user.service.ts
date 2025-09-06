@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Login } from './entities/user.login.entity';
 import bcrypt from 'bcrypt';
 import { LoginDto } from './dto/validate-user.dto';
@@ -14,6 +14,8 @@ import type { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { InferenceClient } from "@huggingface/inference";
 import { GoogleGenAI, Modality } from "@google/genai";
+import { InteractionDTO } from './dto/interaction-user.dto';
+import { Interaction } from './entities/user.interaction.entity';
 
 
 
@@ -24,6 +26,8 @@ export class UserService {
   private userRepository: Repository<User>,
   @InjectRepository(Login)
   private loginRepository: Repository<Login>,
+  @InjectRepository(Interaction)
+  private interactionRepository: Repository<Interaction>,
   private configService: ConfigService,
   private readonly jwtService:JwtService,
   private dataSource:DataSource
@@ -367,16 +371,30 @@ async generateImgStorie(){
  
 }
 
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
-
   async usersInfo(){
 
     const users = await this.userRepository.find();
 
     return users;
+  }
+
+  async interactionBetweenUsers(interactionDTO:InteractionDTO){
+    
+     return await this.dataSource.query("Call P_interactionBetweenUsers(?,?,?)",[interactionDTO]);
+     
+  }
+
+  async getInteractions(id:number,id2:number) {
+      return await this.interactionRepository.find({
+        where:{
+          emisorId:{
+            id: In([id,id2])
+          }
+        },
+        order:{
+          date:"ASC"
+        }
+      })
   }
 }
 
