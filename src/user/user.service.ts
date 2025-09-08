@@ -404,10 +404,11 @@ async generateImgStorie(){
       }
     )
   }
-
   async getIdFacebook(request:Request){
   return {request};
   }
 }
+
+
 
 
