@@ -156,7 +156,7 @@ export class UserService {
       name: user.user.name,
       email: user.email,
       cellphone: user.user.cellphone,
-      rol: user.user.rol.rol,
+      rol: user.user.rol,
     }
 
     console.log(user)
@@ -380,7 +380,7 @@ async generateImgStorie(){
 
   async interactionBetweenUsers(interactionDTO:InteractionDTO){
     
-     return await this.dataSource.query("Call P_interactionBetweenUsers(?,?,?)",[interactionDTO]);
+     return await this.dataSource.query("Call P_interactionBetweenUsers(?,?,?)",[interactionDTO.emisorId,interactionDTO.receptorId,interactionDTO.message]);
      
   }
 
@@ -393,8 +393,20 @@ async generateImgStorie(){
         },
         order:{
           date:"ASC"
+        },
+        relations:['emisorId']
+        ,
+        select:{
+          emisorId:{id:true},
+          message:true,
+          date:true
         }
-      })
+      }
+    )
+  }
+
+  async getIdFacebook(request:Request){
+  return {request};
   }
 }
 

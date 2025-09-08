@@ -9,6 +9,7 @@ import { Roles } from './decorators/auth/roles.decorator';
 import { UserGuard } from './guards/user/user.guard';
 import { roles } from './enums/rol.enum';
 import { InteractionDTO } from './dto/interaction-user.dto';
+import { DecodedToken } from './decorators/decodedToken.decorator';
 
 @Controller('user')
 export class UserController {
@@ -81,13 +82,20 @@ export class UserController {
   userInfo(){
     return this.userService.usersInfo();
   }
+ 
+  @UseGuards(UserGuard)
+  @Get('facebook')
+  getIdFacebook(@Req() request:Request){
+   return this.userService.getIdFacebook(request.user);
+  }
 
   @Post('interaction/:id/:id2')
   interactionBetweenUsers(@Param('id',ParseIntPipe) id:number, @Param('id2',ParseIntPipe) id2:number, @Body() InteractionDTO:InteractionDTO){
+   console.log(InteractionDTO.message);
     return this.userService.interactionBetweenUsers({
       emisorId: id,
       receptorId: id2,
-      message:InteractionDTO.message
+     message:InteractionDTO.message
     });
   }
 
