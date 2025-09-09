@@ -36,6 +36,14 @@ export class UserController {
      console.log(' Entró al método validateToken');
     return {acess:true,message:'Token is valid'};
    }
+   @Roles('admin','user')
+   @UseGuards(AuthGuard)
+   @Get("token")
+   existToken(){
+     console.log(' Entró al método existToken');
+
+    return {log:true}
+   }
 
   @Get('logout')
   logout(@Res() response:Response){
@@ -76,8 +84,8 @@ export class UserController {
     return this.userService.generateImgStorie();
   }
 
-  @Roles('admin')
-  @UseGuards(AuthGuard)
+//  @Roles('admin')
+//  @UseGuards(AuthGuard)
   @Get('infoUsers')
   userInfo(){
     return this.userService.usersInfo();

@@ -23,19 +23,19 @@ export class AuthGuard implements CanActivate {
         const request = context.switchToHttp().getRequest() as Request ;
         
         console.log('Cookies:', request.cookies);
-        const token = request.cookies.token || request.headers['authorization']?.split(' ')[1];
+        
+    try {
+
+     const token = request.cookies.token || request.headers['authorization']?.split(' ')[1];
         if(!token){
           throw new BadRequestException("Token not found");
         };
-    try {
-
-     
     const validate =  this.jwtService.verify(token);
     if(!validate){
       throw new BadRequestException("Invalid token");
     }
     console.log(validate.rol);
-    return roles.includes(validate.rol);
+    return roles.includes(validate.rol.rol);
    
     }
      catch (error) {

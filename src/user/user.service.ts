@@ -16,6 +16,7 @@ import { InferenceClient } from "@huggingface/inference";
 import { GoogleGenAI, Modality } from "@google/genai";
 import { InteractionDTO } from './dto/interaction-user.dto';
 import { Interaction } from './entities/user.interaction.entity';
+import { Rol } from './entities/user.rol.entity';
 
 
 
@@ -65,7 +66,7 @@ export class UserService {
    return "Email already has been registered";
   }
   
-    const user =  this.userRepository.create({name,cellphone,gender});
+    const user =  this.userRepository.create({name,cellphone,gender,rol:{id:2}});
     await this.userRepository.save(user);
 
     const findUser = await this.userRepository.findOne({
@@ -388,6 +389,9 @@ async generateImgStorie(){
       return await this.interactionRepository.find({
         where:{
           emisorId:{
+            id: In([id,id2])
+          },
+          receptorId:{
             id: In([id,id2])
           }
         },
