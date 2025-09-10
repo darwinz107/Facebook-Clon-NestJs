@@ -31,7 +31,7 @@ import { JwtModule } from '@nestjs/jwt';
       database: process.env.DB,
       entities: [],
       autoLoadEntities: true,
-      synchronize:true
+      synchronize:false
     }),
     UserModule
     ],

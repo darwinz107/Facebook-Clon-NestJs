@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Login } from './entities/user.login.entity';
 import bcrypt from 'bcrypt';
 import { LoginDto } from './dto/validate-user.dto';
@@ -14,7 +14,9 @@ import type { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { InferenceClient } from "@huggingface/inference";
 import { GoogleGenAI, Modality } from "@google/genai";
+import { InteractionDTO } from './dto/interaction-user.dto';
 import { Interaction } from './entities/user.interaction.entity';
+import { Rol } from './entities/user.rol.entity';
 
 
 
@@ -64,7 +66,7 @@ export class UserService {
    return "Email already has been registered";
   }
   
-    const user =  this.userRepository.create({name,cellphone,gender});
+    const user =  this.userRepository.create({name,cellphone,gender,rol:{id:2}});
     await this.userRepository.save(user);
 
     const findUser = await this.userRepository.findOne({
@@ -155,7 +157,7 @@ export class UserService {
       name: user.user.name,
       email: user.email,
       cellphone: user.user.cellphone,
-      rol: user.user.rol.rol,
+      rol: user.user.rol,
     }
 
     console.log(user)
@@ -370,31 +372,47 @@ async generateImgStorie(){
  
 }
 
-  async interactionBetweenUsers(receptorId:number, emisorId:number, msj:string){
-     
-    const saveInteraction = this.interactionRepository.create({
-      receptorId,
-      emisorId,
-     message:msj,
-    });
- 
-    return this.interactionRepository.save(saveInteraction);
-
-
-  } 
-
-  async messagesInteraction(receptorId:number, emisorId:number){
-
-    const messaggesSend = await this.interactionRepository.createQueryBuilder('interaction')
-    .innerJoin()
-  } 
-
   async usersInfo(){
 
     const users = await this.userRepository.find();
 
     return users;
   }
+
+  async interactionBetweenUsers(interactionDTO:InteractionDTO){
+    
+     return await this.dataSource.query("Call P_interactionBetweenUsers(?,?,?)",[interactionDTO.emisorId,interactionDTO.receptorId,interactionDTO.message]);
+     
+  }
+
+  async getInteractions(id:number,id2:number) {
+      return await this.interactionRepository.find({
+        where:{
+          emisorId:{
+            id: In([id,id2])
+          },
+          receptorId:{
+            id: In([id,id2])
+          }
+        },
+        order:{
+          date:"ASC"
+        },
+        relations:['emisorId']
+        ,
+        select:{
+          emisorId:{id:true},
+          message:true,
+          date:true
+        }
+      }
+    )
+  }
+  async getIdFacebook(request:Request){
+  return {request};
+  }
 }
+
+
 
 

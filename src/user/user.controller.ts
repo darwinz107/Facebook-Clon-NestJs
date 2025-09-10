@@ -8,6 +8,8 @@ import { AuthGuard } from './guards/auth/auth.guard';
 import { Roles } from './decorators/auth/roles.decorator';
 import { UserGuard } from './guards/user/user.guard';
 import { roles } from './enums/rol.enum';
+import { InteractionDTO } from './dto/interaction-user.dto';
+import { DecodedToken } from './decorators/decodedToken.decorator';
 
 @Controller('user')
 export class UserController {
@@ -33,6 +35,14 @@ export class UserController {
    validateToken(){
      console.log(' Entró al método validateToken');
     return {acess:true,message:'Token is valid'};
+   }
+   @Roles('admin','user')
+   @UseGuards(AuthGuard)
+   @Get("token")
+   existToken(){
+     console.log(' Entró al método existToken');
+
+    return {log:true}
    }
 
   @Get('logout')
@@ -74,16 +84,31 @@ export class UserController {
     return this.userService.generateImgStorie();
   }
 
-  @Roles('admin')
-  @UseGuards(AuthGuard)
+//  @Roles('admin')
+//  @UseGuards(AuthGuard)
   @Get('infoUsers')
   userInfo(){
     return this.userService.usersInfo();
   }
-
-  @Post('interaction/:id/:id2')
-  interactionBetweenRepository(@Param('id',ParseIntPipe) id:number , @Param('id2') id2:number , @Body() message:string){
-    return this.userService.interactionBetweenUsers(id,+id2,message);
+ 
+  @UseGuards(UserGuard)
+  @Get('facebook')
+  getIdFacebook(@Req() request:Request){
+   return this.userService.getIdFacebook(request.user);
   }
 
+  @Post('interaction/:id/:id2')
+  interactionBetweenUsers(@Param('id',ParseIntPipe) id:number, @Param('id2',ParseIntPipe) id2:number, @Body() InteractionDTO:InteractionDTO){
+   console.log(InteractionDTO.message);
+    return this.userService.interactionBetweenUsers({
+      emisorId: id,
+      receptorId: id2,
+     message:InteractionDTO.message
+    });
+  }
+
+  @Get('loadInteraction/:id/:id2')
+  getInteractions(@Param('id',ParseIntPipe) id:number,@Param('id2') id2:number){
+     return this.userService.getInteractions(id,+id2)
+  }
 }
