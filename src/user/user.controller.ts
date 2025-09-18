@@ -38,7 +38,7 @@ export class UserController {
    }
    @Roles('admin','user')
    @UseGuards(AuthGuard)
-   @Get("token")
+   @Get("get/token")
    existToken(){
      console.log(' Entró al método existToken');
 
