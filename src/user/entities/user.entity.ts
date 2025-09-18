@@ -11,18 +11,13 @@ export class User {
     id : number;
 
     @Column()
-    @IsString()
-    @IsNotEmpty()
+    
     name: string;
 
-    @Column()
-    @IsString()
-    @MinLength(10)
-    @MaxLength(20)
-    @IsNotEmpty()
+    @Column({nullable:true})
     cellphone: string;
     
-    @Column()
+    @Column({nullable:true})
     gender:string;
 
     @OneToOne(()=>Login,(login)=>login.user)

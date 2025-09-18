@@ -29,6 +29,8 @@ export class UserService {
   private loginRepository: Repository<Login>,
   @InjectRepository(Interaction)
   private interactionRepository: Repository<Interaction>,
+  @InjectRepository(Rol)
+  private rolRepository: Repository<Rol>,
   private configService: ConfigService,
   private readonly jwtService:JwtService,
   private dataSource:DataSource
@@ -37,9 +39,13 @@ export class UserService {
   
  async create(createUserDto: CreateUserDto): Promise<String> {
   try {
-    
-  
     const{name,cellphone,gender,email,password} = createUserDto;
+     const cantUser = await this.userRepository.find();
+     if(cantUser.length ==0){
+      const user =  this.userRepository.create({name,cellphone,gender,rol:{id:2}});
+    await this.userRepository.save(user);
+    return "";
+     }
 
     const validateCellphone = await this.userRepository.findOne({
       where:{
@@ -87,6 +93,7 @@ export class UserService {
 
     return `User ${name} was created!`;
     } catch (error) {
+
    return `Error: ${error}` 
   }
   }
@@ -410,6 +417,21 @@ async generateImgStorie(){
   }
   async getIdFacebook(request:Request){
   return {request};
+  }
+
+  async insertRoles(rol:string){
+    
+    const sameRol = await this.rolRepository.findOne({where:{
+      rol:rol
+    }});
+    console.log(sameRol);
+    if(sameRol) return "Rol already created!";
+    const createRol= this.rolRepository.create({rol});
+    return await this.rolRepository.save(createRol);
+  }
+
+  async getRoles(){
+    return await this.rolRepository.find();
   }
 }
 

@@ -111,4 +111,14 @@ export class UserController {
   getInteractions(@Param('id',ParseIntPipe) id:number,@Param('id2') id2:number){
      return this.userService.getInteractions(id,+id2)
   }
+
+  @Post("post/rol")
+  createRol(@Body() rol:{rol:string}){
+    return this.userService.insertRoles(rol.rol);
+  }
+
+  @Get("get/roles")
+  async getRoles(){
+    return await this.userService.getRoles();
+  }
 }

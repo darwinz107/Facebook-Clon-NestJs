@@ -8,11 +8,7 @@ export class Rol{
 @PrimaryGeneratedColumn()
 id:number
 
-@Column({type:"enum",
-    enum:roles,
-    default:roles.USER
-})
-@IsEnum(roles)
+@Column({unique:true})
 rol:string
 
 @OneToMany(()=>User,user=>user.rol)
