@@ -23,13 +23,13 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      /*type: 'mysql',
       host: process.env.HOST,
       port: parseInt(process.env.DB_PORT ||"3306",10) ,
       username: process.env.USER,
       password: process.env.PASS,
-      database: process.env.DB,
-      //url:process.env.DB_URL,
+      database: process.env.DB,*/
+      url:process.env.DB_URL,
       entities: [],
       autoLoadEntities: true,
       synchronize:true
