@@ -175,7 +175,7 @@ export class UserService {
     const token = this.jwtService.sign(infoUser);
 
     response.cookie("token",token,{
-      httpOnly:true,
+      httpOnly:false,
       secure:true,
       sameSite:'none',
       maxAge:3600*1000
@@ -188,7 +188,7 @@ export class UserService {
    logout(response:Response){
      
     response.clearCookie("token",{
-      httpOnly:true,
+      httpOnly:false,
       secure:true,
       sameSite:'none'
     });
