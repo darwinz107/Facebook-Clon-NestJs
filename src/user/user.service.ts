@@ -188,7 +188,9 @@ export class UserService {
    logout(response:Response){
      
     response.clearCookie("token",{
-      httpOnly:true
+      httpOnly:true,
+      secure:true,
+      sameSite:'none'
     });
     response.send({message:"Cookie eliminated",session:"Session closed"})
    }
