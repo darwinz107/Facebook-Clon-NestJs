@@ -176,6 +176,8 @@ export class UserService {
 
     response.cookie("token",token,{
       httpOnly:true,
+      secure:true,
+      sameSite:'none',
       maxAge:3600*1000
     });
    return {
