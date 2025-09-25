@@ -10,6 +10,7 @@ import { UserGuard } from './guards/user/user.guard';
 import { roles } from './enums/rol.enum';
 import { InteractionDTO } from './dto/interaction-user.dto';
 import { DecodedToken } from './decorators/decodedToken.decorator';
+import { UpdateInteractionDto } from './dto/interaction/update-interaction-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -120,5 +121,26 @@ export class UserController {
   @Get("get/roles")
   async getRoles(){
     return await this.userService.getRoles();
+  }
+
+  @Get("messages/receptor/:id")
+  async getReceptors(@Param('id',ParseIntPipe) id:number){
+    //console.log("getReceptors");
+     return this.userService.getReceptors(id);
+  }
+
+  @Get("total/notseen/:id")
+  async getNotSeen(@Param('id',ParseIntPipe) id:number){
+    return this.userService.getHanlderSeen(id);
+  }
+
+  @Get("notseenbyuser/:id/:id2")
+  async getNotSeenByUser(@Param('id',ParseIntPipe) id:number, @Param('id2') id2:number){
+       return this.userService.getSeenByUser(id,+id2);
+  }
+
+  @Patch("change/seen/:id/:id2")
+  async setSeen(@Param('id',ParseIntPipe) id:number,@Param('id2',ParseIntPipe) id2:number, @Body() updateInteractionDto:UpdateInteractionDto){
+     return this.userService.setLikeSeen(id,id2,updateInteractionDto);
   }
 }

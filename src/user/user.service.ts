@@ -17,6 +17,7 @@ import { GoogleGenAI, Modality } from "@google/genai";
 import { InteractionDTO } from './dto/interaction-user.dto';
 import { Interaction } from './entities/user.interaction.entity';
 import { Rol } from './entities/user.rol.entity';
+import { UpdateInteractionDto } from './dto/interaction/update-interaction-user.dto';
 
 
 
@@ -437,6 +438,49 @@ async generateImgStorie(){
   async getRoles(){
     return await this.rolRepository.find();
   }
+
+  async getReceptors(id:number){
+     const msjReceptors = await this.interactionRepository.find({where:{
+      receptorId:{
+        id:id
+      }
+     },select:['receptorId','message'],relations:['receptorId']});
+
+     return msjReceptors;
+  }
+
+  async getHanlderSeen(id:number){
+    const msjNotSeen = await this.interactionRepository.find({
+      where:{
+        receptorId:{id:id},
+        seen:false
+      }
+    });
+
+    return msjNotSeen;
+  }
+
+  async getSeenByUser(id:number,id2:number){
+    const msjNotSeen = await this.interactionRepository.find({
+      where:{
+          emisorId:{
+            id:id2
+          },
+          receptorId:{
+            id:id
+          },
+          seen:false
+      }
+    });
+
+    return msjNotSeen;
+  }
+
+  async setLikeSeen(id:number,id2:number,updateInteractionDto:UpdateInteractionDto){
+     const msjLikeSeen = await this.interactionRepository.update({emisorId:{id:id2},receptorId:{id:id},seen:false},{seen:updateInteractionDto.seen});
+      return msjLikeSeen;
+  }
+
 }
 
 

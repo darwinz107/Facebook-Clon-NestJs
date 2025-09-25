@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsEmpty, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 
 export class InteractionDTO{
@@ -13,4 +13,8 @@ export class InteractionDTO{
     
     @IsString()
     message:string
+
+    @IsOptional()
+    @IsBoolean()
+    seen?:boolean;
 }
