@@ -7,9 +7,10 @@ import { Login } from './entities/user.login.entity';
 import { Rol } from './entities/user.rol.entity';
 import { Interaction } from './entities/user.interaction.entity';
 import { AuthTokenMiddleware } from './middlewares/auth-token.middleware';
+import { Posts } from './entities/Posts/post.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User,Login,Rol,Interaction])],
+  imports:[TypeOrmModule.forFeature([User,Login,Rol,Interaction,Posts])],
   controllers: [UserController],
   providers: [UserService],
 })

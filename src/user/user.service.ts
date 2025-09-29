@@ -18,6 +18,8 @@ import { InteractionDTO } from './dto/interaction-user.dto';
 import { Interaction } from './entities/user.interaction.entity';
 import { Rol } from './entities/user.rol.entity';
 import { UpdateInteractionDto } from './dto/interaction/update-interaction-user.dto';
+import { CreatePostDto } from './dto/Post/create-post.dto';
+import { Posts } from './entities/Posts/post.entity';
 
 
 
@@ -32,6 +34,10 @@ export class UserService {
   private interactionRepository: Repository<Interaction>,
   @InjectRepository(Rol)
   private rolRepository: Repository<Rol>,
+  @InjectRepository(Posts)
+  private postsRepository: Repository<Posts>,
+
+  //configService lo inyecto para llamar a la palabra SECRET
   private configService: ConfigService,
   private readonly jwtService:JwtService,
   private dataSource:DataSource
@@ -479,6 +485,42 @@ async generateImgStorie(){
   async setLikeSeen(id:number,id2:number,updateInteractionDto:UpdateInteractionDto){
      const msjLikeSeen = await this.interactionRepository.update({emisorId:{id:id2},receptorId:{id:id},seen:false},{seen:updateInteractionDto.seen});
       return msjLikeSeen;
+  }
+
+
+  async registerPost(id:number,createPostDto:CreatePostDto){
+   
+   const findUser = await this.userRepository.findOne({where:{
+    id:id
+   }});
+
+   if(!findUser){
+     throw new NotFoundException("Don't found user");
+   }
+
+     const createPost= await this.postsRepository.create({user:findUser,description:createPostDto.description,content:createPostDto.content}); 
+     return this.postsRepository.save(createPost);
+  }
+
+  async getAllPosts(){
+    const findPosts = await this.postsRepository.find({relations:['user'],order:{datePublish:'DESC'}});
+    return findPosts;
+  }
+
+  async deletePost(id:number){
+    const findPost = await this.postsRepository.findOne({
+      where:{
+        id:id
+      }
+    });
+
+    if(!findPost){
+    throw new NotFoundException("Don't have a post!");
+    };
+
+   await this.postsRepository.delete(id);
+
+   return {msj:"Post was deleted succesful!"};
   }
 
 }

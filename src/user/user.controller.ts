@@ -11,6 +11,7 @@ import { roles } from './enums/rol.enum';
 import { InteractionDTO } from './dto/interaction-user.dto';
 import { DecodedToken } from './decorators/decodedToken.decorator';
 import { UpdateInteractionDto } from './dto/interaction/update-interaction-user.dto';
+import { CreatePostDto } from './dto/Post/create-post.dto';
 
 @Controller('user')
 export class UserController {
@@ -142,5 +143,20 @@ export class UserController {
   @Patch("change/seen/:id/:id2")
   async setSeen(@Param('id',ParseIntPipe) id:number,@Param('id2',ParseIntPipe) id2:number, @Body() updateInteractionDto:UpdateInteractionDto){
      return this.userService.setLikeSeen(id,id2,updateInteractionDto);
+  }
+
+  @Post("create/post/:id")
+  async createPost(@Param('id',ParseIntPipe) id:number,@Body() createPostDto:CreatePostDto){
+     return this.userService.registerPost(id,createPostDto);
+  }
+
+  @Get("all/posts")
+  async getAllPosts(){
+    return this.userService.getAllPosts();
+  }
+
+  @Delete("posts/:id")
+  async deletePost(@Param('id',ParseIntPipe) id:number){
+     return this.userService.deletePost(id);
   }
 }

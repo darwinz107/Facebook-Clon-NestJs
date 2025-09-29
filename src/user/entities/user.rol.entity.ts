@@ -11,6 +11,7 @@ id:number
 @Column({unique:true})
 rol:string
 
+//Un rol pueden tenerlo muchos usuarios
 @OneToMany(()=>User,user=>user.rol)
 user:User[]
 }
