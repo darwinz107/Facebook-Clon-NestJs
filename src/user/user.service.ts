@@ -20,6 +20,9 @@ import { Rol } from './entities/user.rol.entity';
 import { UpdateInteractionDto } from './dto/interaction/update-interaction-user.dto';
 import { CreatePostDto } from './dto/Post/create-post.dto';
 import { Posts } from './entities/Posts/post.entity';
+import { UpdatePostDto } from './dto/Post/update-post.dto';
+import { CreateStorieDto } from './dto/Post/create-storie.dto';
+import { Stories } from './entities/Posts/stories.entity';
 
 
 
@@ -36,7 +39,8 @@ export class UserService {
   private rolRepository: Repository<Rol>,
   @InjectRepository(Posts)
   private postsRepository: Repository<Posts>,
-
+  @InjectRepository(Stories)
+  private storiesRepository: Repository<Stories>,
   //configService lo inyecto para llamar a la palabra SECRET
   private configService: ConfigService,
   private readonly jwtService:JwtService,
@@ -521,6 +525,49 @@ async generateImgStorie(){
    await this.postsRepository.delete(id);
 
    return {msj:"Post was deleted succesful!"};
+  }
+
+  async updateContentPost(id:number,updatePostDto:UpdatePostDto){
+    
+  /*
+   Una forma de actualizar pero no tan directo como con update  
+
+  const findUser = await this.postsRepository.findOne({where:{
+      id:id
+    }});
+
+    if(!findUser){
+    throw new NotFoundException("Don't found post");
+    }
+
+    findUser.content = content;
+    await this.postsRepository.save(findUser);
+    */
+
+    //Forma mas directa de actulizar, solo se pasa el id y entre corchete elegimos el campo a actualizar
+   const contentUpdated = await this.postsRepository.update(id,{description:updatePostDto.description});
+
+   if(contentUpdated.affected === 0){
+   return {msj:"Post don't founded!"}
+   }
+   return {msj:"Post updated succesful!"};
+  };
+
+  async createStorie(userId:number,createStorieDto:CreateStorieDto){
+     
+    const findUser = await this.userRepository.findOne({where:{
+      id:userId
+    }});
+
+    if(!findUser){
+    throw new NotFoundException("User don't founded!");
+    };
+
+
+   const newStorie = await this.storiesRepository.create({user:findUser,content:createStorieDto.content});
+
+   return {msj:"Storie registered successful!"};
+
   }
 
 }

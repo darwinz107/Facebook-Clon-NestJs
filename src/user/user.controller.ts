@@ -12,6 +12,8 @@ import { InteractionDTO } from './dto/interaction-user.dto';
 import { DecodedToken } from './decorators/decodedToken.decorator';
 import { UpdateInteractionDto } from './dto/interaction/update-interaction-user.dto';
 import { CreatePostDto } from './dto/Post/create-post.dto';
+import { UpdatePostDto } from './dto/Post/update-post.dto';
+import { CreateStorieDto } from './dto/Post/create-storie.dto';
 
 @Controller('user')
 export class UserController {
@@ -158,5 +160,16 @@ export class UserController {
   @Delete("posts/:id")
   async deletePost(@Param('id',ParseIntPipe) id:number){
      return this.userService.deletePost(id);
+  }
+
+  @Patch("post/content/:id")
+  async updateContentPost(@Param('id',ParseIntPipe) id:number, @Body() updatePostDto:UpdatePostDto){
+   
+       return this.userService.updateContentPost(id,updatePostDto);
+  }
+
+  @Post("create/storie/:userId")
+  async createStorie(@Param('userId',ParseIntPipe) id:number, @Body() createStorieDto:CreateStorieDto){
+   return this.userService.createStorie(id,createStorieDto);
   }
 }
