@@ -172,4 +172,15 @@ export class UserController {
   async createStorie(@Param('userId',ParseIntPipe) id:number, @Body() createStorieDto:CreateStorieDto){
    return this.userService.createStorie(id,createStorieDto);
   }
+
+  @Get("all/stories")
+  async getAllStories(){
+    return this.userService.getAllStories();
+  }
+
+  @Delete("delete/storie/:id")
+async deleteStorie(@Param('id', ParseIntPipe) id:number){
+  return this.userService.deleteStorie(id);
+}
+
 }

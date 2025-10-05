@@ -1,4 +1,4 @@
-import { Body, Injectable, NotFoundException, ParseDatePipe, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Injectable, NotFoundException, ParseDatePipe, Post, Res } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -565,13 +565,36 @@ async generateImgStorie(){
 
 
    const newStorie = await this.storiesRepository.create({user:findUser,content:createStorieDto.content});
+   const result= await this.storiesRepository.save(newStorie);
+
+   const storieRegister = await this.storiesRepository.findOne({where:{
+    id:result.id
+   }});
+   if(!storieRegister){
+throw new NotFoundException("Register failed");
+   }
 
    return {msj:"Storie registered successful!"};
 
   }
 
+  async getAllStories(){
+   const stories = await this.storiesRepository.find({relations:['user']});
+   
+   return stories;
+}
+
+async deleteStorie(id:number){
+
+  const msjdelete = await this.storiesRepository.delete(id);
+
+  if(msjdelete.affected ===0){
+    throw new BadRequestException();
+  }
+
+  return {msj:`Delete storie #${id}`}
 }
 
 
-
+}
 

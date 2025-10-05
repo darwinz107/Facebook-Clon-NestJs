@@ -11,7 +11,7 @@ async function bootstrap() {
     credentials:true
    });
    app.use(cookieParser());
-   app.use(express.json({limit:'50mb'}));
+   app.use(express.json({limit:'100mb'}));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
