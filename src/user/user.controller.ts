@@ -194,4 +194,14 @@ async getLikeByPostId(@Param("id",ParseIntPipe) id:number){
  return this.userService.getLikesByPost(id);
 }
 
+@Get("like/getbyuser/:id/:postId")
+async getLikeByUser(@Param("id",ParseIntPipe) id:number, @Param("postId", ParseIntPipe) postId:number){
+ return this.userService.getLikeByUser(id,postId);
+}
+
+@Delete("like/delete/:id")
+async deleteLikeById(@Param("id",ParseIntPipe) id:number){
+ return this.userService.deleteLike(id);
+}
+
 }

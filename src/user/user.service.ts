@@ -644,4 +644,36 @@ async getLikesByPost(id:number){
   return {lgt:likeLength.length};
 }
 
+async getLikeByUser(id:number, postId:number){
+
+  const user = await this.userRepository.findOne({where:{id:id}});
+  
+  if(!user){
+   return new NotFoundException("Don't exist user");
+  }
+
+  const post = await this.postsRepository.findOne({where:{id:postId}});
+
+  if(!post){
+  return new NotFoundException("Post don't found");
+  }
+
+  const validateLike = await this.likesRepository.findOne({where:{
+    userId:user,
+    PostId:post
+  }});
+
+  if(!validateLike){
+  return {validate:false}
+  }
+
+  
+  return {validate:true,likeId:validateLike.id};
+}
+
+async deleteLike(id:number){
+
+  await this.likesRepository.delete(id);
+}
+
 }
