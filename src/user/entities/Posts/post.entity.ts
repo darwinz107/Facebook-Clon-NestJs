@@ -19,6 +19,6 @@ export class Posts{
     content?:string;
     @Column({type:"timestamp", default: ()=>'CURRENT_TIMESTAMP'})
     datePublish:Date;
-    @OneToMany(()=>Likes,(like)=>like.post)
+    @OneToMany(()=>Likes,(like)=>like.PostId)
     like:Likes[]
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Injectable, NotFoundException, ParseDatePipe, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Inject, Injectable, NotFoundException, ParseDatePipe, Post, Res } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,6 +23,8 @@ import { Posts } from './entities/Posts/post.entity';
 import { UpdatePostDto } from './dto/Post/update-post.dto';
 import { CreateStorieDto } from './dto/Post/create-storie.dto';
 import { Stories } from './entities/Posts/stories.entity';
+import { CreateLikesDto } from './dto/likes/create-likes.dto';
+import { Likes } from './entities/Posts/likes.entity';
 
 
 
@@ -41,6 +43,8 @@ export class UserService {
   private postsRepository: Repository<Posts>,
   @InjectRepository(Stories)
   private storiesRepository: Repository<Stories>,
+  @InjectRepository(Likes)
+  private likesRepository: Repository<Likes>,
   //configService lo inyecto para llamar a la palabra SECRET
   private configService: ConfigService,
   private readonly jwtService:JwtService,
@@ -595,10 +599,49 @@ async deleteStorie(id:number){
   return {msj:`Delete storie #${id}`}
 }
 
-async handleLikes(){
+async handleLikes(createLikesDto: CreateLikesDto){
+ 
+  const user = await this.userRepository.findOne({where:{
+    id:createLikesDto.userId
+  }});
+
+  const post = await this.postsRepository.findOne({where:{
+    id:createLikesDto.PostId
+  }});
+
+  if(!user){
+    return new NotFoundException("User don't exist");
+  }
+
+  if(!post){
+   return new NotFoundException("Post don't exist");
+  }
+
+  //Recuerda: Aqui no debes poner directamente el id ya sea de user o post ya que no espera numeros,
+  //esta son relaciones por lo que espera en si la clase por ello es que buscamos primero tanto user
+  //y post, y eso que encontramos lo asignamos ahi. Bueno eso te sirve para culquier relacion.
+  const newLike = await this.likesRepository.create({userId:user,PostId:post});
+
+  await this.likesRepository.save(newLike);
+
+  return {msj:"you rock!"}
+
+}
+
+async getLikesByPost(id:number){
+
   
+  const likeLength = await this.likesRepository.find({where:{
+    PostId:{
+      id:id
+    }
+  }});
+
+  if(!likeLength){
+   return new NotFoundException("Likes don't found");
+  }
+
+  return {lgt:likeLength.length};
 }
 
-
 }
-

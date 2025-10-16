@@ -9,9 +9,10 @@ import { Interaction } from './entities/user.interaction.entity';
 import { AuthTokenMiddleware } from './middlewares/auth-token.middleware';
 import { Posts } from './entities/Posts/post.entity';
 import { Stories } from './entities/Posts/stories.entity';
+import { Likes } from './entities/Posts/likes.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User,Login,Rol,Interaction,Posts,Stories])],
+  imports:[TypeOrmModule.forFeature([User,Login,Rol,Interaction,Posts,Stories,Likes])],
   controllers: [UserController],
   providers: [UserService],
 })

@@ -32,7 +32,7 @@ import { JwtModule } from '@nestjs/jwt';
       //url:process.env.DB_URL,
       entities: [],
       autoLoadEntities: true,
-      synchronize:true,
+      synchronize:false,
     }),
     UserModule
     ],

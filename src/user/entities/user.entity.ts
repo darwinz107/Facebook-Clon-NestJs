@@ -7,6 +7,7 @@ import { Posts } from "./Posts/post.entity";
 import { Stories } from "./Posts/stories.entity";
 import { Likes } from "./Posts/likes.entity";
 
+
 @Entity()
 export class User {
 
@@ -46,7 +47,12 @@ export class User {
     //Muchas stories pertenecera a un solo , en cambio si fuera manytomany habria una tercera tabla que conecte a ambas por ejemplo usuarios y stories y las conectaria, osea que podria pertencerle a cualqueira.
     @OneToMany(() => Stories, (storie) => storie.user)
     storie: Stories[]
-
-    @OneToMany(()=>Likes,(like)=>like.user)
+    
+    //Aqui un usuario puede dar muchos likes, y por ende muchos likes dados puede tenerlo un usuario
+    //viendolo asi lo normal para que una persona pueda aparecer mas de una vez en la otra tabla en este
+    //caso en likes, se usar onetomany y manytoone es lo normal para estos casos.
+    //En cambio manytomany de por si deben existir las 2 tablas y asi eso lo que hacen es emparejar y
+    //lo muestra en otra tabla, espero que te quede claro.
+    @OneToMany(()=>Likes,(like)=>like.userId)
     like:Likes[]
 }

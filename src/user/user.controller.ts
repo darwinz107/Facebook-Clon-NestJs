@@ -14,6 +14,7 @@ import { UpdateInteractionDto } from './dto/interaction/update-interaction-user.
 import { CreatePostDto } from './dto/Post/create-post.dto';
 import { UpdatePostDto } from './dto/Post/update-post.dto';
 import { CreateStorieDto } from './dto/Post/create-storie.dto';
+import { CreateLikesDto } from './dto/likes/create-likes.dto';
 
 @Controller('user')
 export class UserController {
@@ -181,6 +182,16 @@ export class UserController {
   @Delete("delete/storie/:id")
 async deleteStorie(@Param('id', ParseIntPipe) id:number){
   return this.userService.deleteStorie(id);
+}
+
+@Post("like/create")
+async handleLike(@Body() createLikesDto: CreateLikesDto){
+return this.userService.handleLikes(createLikesDto);
+}
+
+@Get("like/getbyid/:id")
+async getLikeByPostId(@Param("id",ParseIntPipe) id:number){
+ return this.userService.getLikesByPost(id);
 }
 
 }
