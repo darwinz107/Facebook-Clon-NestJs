@@ -1,10 +1,11 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Login } from "./user.login.entity";
 import { Rol } from "./user.rol.entity";
 import { Interaction } from "./user.interaction.entity";
 import { Posts } from "./Posts/post.entity";
 import { Stories } from "./Posts/stories.entity";
+import { Likes } from "./Posts/likes.entity";
 
 @Entity()
 export class User {
@@ -45,4 +46,7 @@ export class User {
     //Muchas stories pertenecera a un solo , en cambio si fuera manytomany habria una tercera tabla que conecte a ambas por ejemplo usuarios y stories y las conectaria, osea que podria pertencerle a cualqueira.
     @OneToMany(() => Stories, (storie) => storie.user)
     storie: Stories[]
+
+    @OneToMany(()=>Likes,(like)=>like.user)
+    like:Likes[]
 }

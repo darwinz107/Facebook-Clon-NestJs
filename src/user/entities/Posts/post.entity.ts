@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../user.entity";
+import { Likes } from "./likes.entity";
 
 @Entity()
 export class Posts{
@@ -18,4 +19,6 @@ export class Posts{
     content?:string;
     @Column({type:"timestamp", default: ()=>'CURRENT_TIMESTAMP'})
     datePublish:Date;
+    @OneToMany(()=>Likes,(like)=>like.post)
+    like:Likes[]
 }

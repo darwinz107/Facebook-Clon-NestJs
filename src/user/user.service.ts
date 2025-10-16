@@ -595,6 +595,10 @@ async deleteStorie(id:number){
   return {msj:`Delete storie #${id}`}
 }
 
+async handleLikes(){
+  
+}
+
 
 }
 
