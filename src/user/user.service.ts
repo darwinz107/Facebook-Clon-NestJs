@@ -25,6 +25,7 @@ import { CreateStorieDto } from './dto/Post/create-storie.dto';
 import { Stories } from './entities/Posts/stories.entity';
 import { CreateLikesDto } from './dto/likes/create-likes.dto';
 import { Likes } from './entities/Posts/likes.entity';
+import { Comment } from './entities/Posts/comments.entity';
 
 
 
@@ -45,9 +46,13 @@ export class UserService {
   private storiesRepository: Repository<Stories>,
   @InjectRepository(Likes)
   private likesRepository: Repository<Likes>,
+  @InjectRepository(Comment)
+  private commentRepository: Repository<Comment>,
   //configService lo inyecto para llamar a la palabra SECRET
   private configService: ConfigService,
+  //JwtService se inyecta para usar las funciones para crear un token
   private readonly jwtService:JwtService,
+  //DataSource se inyecta para usar querys mas personalizados y no los repositories como tal
   private dataSource:DataSource
 ){}
 
@@ -674,6 +679,17 @@ async getLikeByUser(id:number, postId:number){
 async deleteLike(id:number){
 
   await this.likesRepository.delete(id);
+}
+
+async getAllCommentByPost(id:number){
+ 
+  const comments = await this.commentRepository.find({
+    where:{
+      id:id
+    }
+  });
+
+  return comments;
 }
 
 }

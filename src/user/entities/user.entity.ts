@@ -6,6 +6,7 @@ import { Interaction } from "./user.interaction.entity";
 import { Posts } from "./Posts/post.entity";
 import { Stories } from "./Posts/stories.entity";
 import { Likes } from "./Posts/likes.entity";
+import { Comment } from "./Posts/comments.entity";
 
 
 @Entity()
@@ -55,4 +56,7 @@ export class User {
     //lo muestra en otra tabla, espero que te quede claro.
     @OneToMany(()=>Likes,(like)=>like.userId)
     like:Likes[]
+    
+    @OneToMany(()=>Comment,(comment)=>comment.userId)
+    comment:Comment[];
 }

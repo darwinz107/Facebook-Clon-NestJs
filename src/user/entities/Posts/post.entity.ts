@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../user.entity";
 import { Likes } from "./likes.entity";
+import { Comment } from "./comments.entity";
 
 @Entity()
 export class Posts{
@@ -21,4 +22,7 @@ export class Posts{
     datePublish:Date;
     @OneToMany(()=>Likes,(like)=>like.PostId)
     like:Likes[]
+    
+    @OneToMany(()=>Comment,(comment)=>comment.PostId)
+    comment:Comment[];
 }

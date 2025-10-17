@@ -18,6 +18,13 @@ import { CreateLikesDto } from './dto/likes/create-likes.dto';
 
 @Controller('user')
 export class UserController {
+  //Aqui el constructor lo que hace es que nest al ejecutar esta clase como objeto automaticamente asigna
+  // a la variable userService la clase UserService y por ende podemos usar todos sus metodos en esta clase
+  //Y ojo esto se lo pasa como parametro y ahi vez como se le asigna el tipo que es la clase UserService,
+  //acuerdate como cuando trabajaste con ef y asp.net en c# donde asimismo inyectabamos en el constructor
+  //primero como para parametro una variable y luego le asignamos el tipo de la clase en ese caso DbContext
+  //y bueno ahi asignabamos a una variable ese parametro, en este caso no hacemos eso y lo usamos directamente
+  //como lo asignamos en los parametros. En si esto es inyeccion de dependencias.
   constructor(private readonly userService: UserService) {}
 
   @Post("create")
@@ -202,6 +209,11 @@ async getLikeByUser(@Param("id",ParseIntPipe) id:number, @Param("postId", ParseI
 @Delete("like/delete/:id")
 async deleteLikeById(@Param("id",ParseIntPipe) id:number){
  return this.userService.deleteLike(id);
+}
+
+@Get("comments/:id")
+async getAllCommentsById(@Param("id",ParseIntPipe) id:number){
+  return this.userService.getAllCommentByPost(id);
 }
 
 }
